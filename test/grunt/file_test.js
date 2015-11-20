@@ -511,6 +511,24 @@ exports['file'] = {
     test.equal(grunt.file.exists(filepath), false, 'file should NOT be created if --no-write was specified.');
     test.done();
   },
+  'copy symbolic link - file': function(test) {
+    test.expect(2);
+    var symlinkFilepath = path.join(tmpdir.path, 'octocat.png');
+    var newSymlinkFilepath = path.join(tmpdir.path, 'octocat.png-link');
+    grunt.file.copy(symlinkFilepath, newSymlinkFilepath, {keepSymLinks: true});
+    test.ok(fs.lstatSync(newSymlinkFilepath).isSymbolicLink(), 'symbolic link should remain intact after copy');
+    test.equal(fs.readlinkSync(newSymlinkFilepath), fs.readlinkSync(symlinkFilepath), 'the copied symlink shoud point to the same file');
+    test.done();
+  },
+  'copy symbolic link - directory': function(test) {
+    test.expect(2);
+    var symlinkDirpath = path.join(tmpdir.path, 'expand');
+    var newSymlinkDirpath = path.join(tmpdir.path, 'expand-link');
+    grunt.file.copy(symlinkDirpath, newSymlinkDirpath, {keepSymLinks: true});
+    test.ok(fs.lstatSync(newSymlinkDirpath).isSymbolicLink(), 'symbolic link should remain intact after copy');
+    test.equal(fs.readlinkSync(newSymlinkDirpath), fs.readlinkSync(symlinkDirpath), 'the copied symlink shoud point to the same directory');
+    test.done();
+  },
   'copy and process': function(test) {
     test.expect(14);
     var tmpfile;
